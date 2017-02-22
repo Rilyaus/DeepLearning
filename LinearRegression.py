@@ -26,14 +26,9 @@ train_Y = ref_Y + np.sqrt(noise_var)*np.random.randn(1, n)
 n_samples = train_X.size
 
 print("")
-print (" Type of 'train_X' is ", type(train_X))
+print (" Type of 'train_X' is ", train_X)
 print (" Shape of 'train_X' is %s" % (train_X.shape,))
 print (" Type of 'train_Y' is ", type(train_Y))
 print (" Shape of 'train_Y' is %s" % (train_Y.shape,))
 
-plt.figure(1)
-plt.plot(train_X[0, :], ref_Y[0, :], 'ro', label='Original data')
-plt.plot(train_X[0, :], train_Y[0, :], 'bo', label='Training data')
-plt.axis('equal')
-plt.legend(loc='lower right')
-plt.show()
+plt.figure()

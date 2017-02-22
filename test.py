@@ -1,10 +1,6 @@
 import tensorflow as tf
+import numpy as np
 
-matrix1 = tf.constant([[3., 3.]])
-matrix2 = tf.constant([[2.],[2.]])
-
-product = tf.matmul(matrix1, matrix2)
-
-with tf.Session() as sess:
-    result = sess.run(product)
-    print(result)
+data_f = open("./tensorflow_DATA/X/X_Test_case_01.dat")
+read_data = np.loadtxt(data_f)
+data_f.close()

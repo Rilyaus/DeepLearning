@@ -1,6 +1,9 @@
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import tensorflow as tf
+
+matplotlib.use('Agg')
 
 number_of_points = 200
 

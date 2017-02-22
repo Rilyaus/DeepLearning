@@ -25,10 +25,9 @@ batch_size = 1
 rnn_cell = tf.nn.rnn_cell.BasicRNNCell(rnn_size)
 state = tf.zeros([batch_size, rnn_cell.state_size])
 
-#x_data를 time_step_size로 나누어서 셀을 구성
+#cell consists of x_data divided by time_step_size
 X_split = tf.split(0, time_step_size, x_data)
 outputs, state = tf.nn.rnn(rnn_cell, X_split, state)
-
 
 logits = tf.reshape(tf.concat(1, outputs), [-1, rnn_size])
 targets = tf.reshape(sample[0:], [-1])
@@ -36,8 +35,7 @@ targets = tf.reshape(sample[0:], [-1])
 weights = tf.ones([5 * batch_size])
 #weights = tf.ones([len(char_dic) * batch_size])
 
-#예측값, 실제값, 비율
-
+#pred Val, correct Val, rate
 loss = tf.nn.seq2seq.sequence_loss_by_example([logits], [targets], [weights])
 
 cost = tf.reduce_sum(loss) / batch_size
