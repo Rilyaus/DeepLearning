@@ -1,5 +1,10 @@
 import tensorflow as tf
 import numpy as np
+#import matplotlib
+import pylab
+
+#matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 
 #%matplotlib inline
@@ -31,4 +36,9 @@ print (" Shape of 'train_X' is %s" % (train_X.shape,))
 print (" Type of 'train_Y' is ", type(train_Y))
 print (" Shape of 'train_Y' is %s" % (train_Y.shape,))
 
-plt.figure()
+plt.plot(train_X, 'o', label='Input Data')
+
+pylab.show()
+#plt.savefig('myfig')
+#plt.legend()
+#plt.show()
