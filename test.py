@@ -1,31 +1,17 @@
-import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
 
-data_f = open("./tensorflow_DATA/X/X_Test_case_01.dat")
-read_data = np.loadtxt(data_f)
-data_f.close()
 
-# Create input data
-X = np.random.randn(2, 10, 8)
+num_points = 1000
+vectors_set = []
+for i in xrange(num_points):
+         x1= np.random.normal(0.0, 0.55)
+         y1= x1 * 0.1 + 0.3 + np.random.normal(0.0, 0.03)
+         vectors_set.append([x1, y1])
 
-# The second example is of length 6
-X[1,6:] = 0
-X_lengths = [10, 6]
+x_data = [v[0] for v in vectors_set]
+y_data = [v[1] for v in vectors_set]
 
-cell = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True)
-
-outputs, last_states = tf.nn.dynamic_rnn(
-    cell=cell,
-    dtype=tf.float64,
-    sequence_length=X_lengths,
-    inputs=X)
-
-result = tf.contrib.learn.run_n(
-    {"outputs": outputs, "last_states": last_states},
-    n=1,
-    feed_dict=None)
-
-assert result[0]["outputs"].shape == (2, 10, 64)
-
-# Outputs for the second example past past length 6 should be 0
-assert (result[0]["outputs"][1,7,:] == np.zeros(cell.output_size)).all()
+plt.plot(x_data, y_data, 'ro', label='Original data')
+plt.legend()
+plt.show()
