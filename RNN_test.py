@@ -1,79 +1,63 @@
-import numpy as np
-from random import shuffle
-
 import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
 
-train_input = ['{0:020b}'.format(i) for i in range(2**20)]
-shuffle(train_input)
+data_f = open("./tensorflow_DATA/relative/relTest_case_01.dat")
+read_data = np.loadtxt(data_f)
+data_f.close()
 
-train_input = [map(int,i) for i in train_input]
-ti = []
-for i in train_input:
-    temp_list = []
-    for j in i:
-        temp_list.append([j])
-    ti.append(np.array(temp_list))
-train_input = ti
+lon_def = 125.079590
+lat_def = 36.578830
 
-train_output = []
+num_steps = 5
+batch_size = 1
+rnn_size = 5
 
-for i in train_input:
-    count = 0
-    for j in i:
-        if j[0] == 1:
-            count+=1
-    temp_list = ([0]*21)
-    temp_list[count]=1
-    train_output.append(temp_list)
+y_lon = read_data[:,0]
+y_lat = read_data[:,1]
+velo_U = read_data[:,2]
+velo_V = read_data[:,3]
+wind_U = read_data[:,4]
+wind_V = read_data[:,5]
 
-    NUM_EXAMPLES = 10000
-test_input = train_input[NUM_EXAMPLES:]
-test_output = train_output[NUM_EXAMPLES:] #everything beyond 10,000
+W1 = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
+W2 = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
+W3 = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
+W4 = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
+b = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
 
-train_input = train_input[:NUM_EXAMPLES]
-train_output = train_output[:NUM_EXAMPLES] #till 10,000
+hypothesis = W1*velo_U + W2*velo_V + W3*wind_U + W4*wind_V + b
 
+cost_lon = tf.reduce_mean(tf.square(hypothesis - y_lon))
+cost_lat = tf.reduce_mean(tf.square(hypothesis - y_lat))
 
-data = tf.placeholder(tf.float32, [None, 20,1])
-target = tf.placeholder(tf.float32, [None, 21])
-num_hidden = 24
-cell = tf.nn.rnn_cell.LSTMCell(num_hidden,state_is_tuple=True)
+rate = tf.Variable(0.01)
+optimizer = tf.train.GradientDescentOptimizer(rate)
+train_lon = optimizer.minimize(cost_lon)
+train_lat = optimizer.minimize(cost_lat)
 
-val, state = tf.nn.dynamic_rnn(cell, data, dtype=tf.float32)
+#rnn_cell = tf.nn.rnn_cell.BasicRNNCell(rnn_size)
+#state = tf.zeros([batch_size, rnn_cell.state_size])
 
-val = tf.transpose(val, [1, 0, 2])
-last = tf.gather(val, int(val.get_shape()[0]) - 1)
+#loss = tf.nn.seq2seq.sequence_loss_by_example(y_lon, hypothesis)
 
-weight = tf.Variable(tf.truncated_normal([num_hidden, int(target.get_shape()[1])]))
-bias = tf.Variable(tf.constant(0.1, shape=[target.get_shape()[1]]))
+#cost = tf.reduce_sum(loss) / batch_size
+#train_op = tf.train.RMSPropOptimizer(0.01, 0.9).minimize(cost)
 
-prediction = tf.nn.softmax(tf.matmul(last, weight) + bias)
+init = tf.initialize_all_variables()
 
-cross_entropy = -tf.reduce_sum(target * tf.log(tf.clip_by_value(prediction,1e-10,1.0)))
-
-optimizer = tf.train.AdamOptimizer()
-minimize = optimizer.minimize(cross_entropy)
-
-mistakes = tf.not_equal(tf.argmax(target, 1), tf.argmax(prediction, 1))
-error = tf.reduce_mean(tf.cast(mistakes, tf.float32))
-
-
-# Excution of the graph
-
-init_op = tf.initialize_all_variables()
 sess = tf.Session()
-sess.run(init_op)
+sess.run(init)
 
-batch_size = 1000
-no_of_batches = int(len(train_input)/batch_size)
-epoch = 200
-for i in range(epoch):
-    ptr = 0
-    for j in range(no_of_batches):
-        inp, out = train_input[ptr:ptr+batch_size], train_output[ptr:ptr+batch_size]
-        ptr+=batch_size
-        sess.run(minimize,{data: inp, target: out})
-    print "Epoch - ",str(i)
-incorrect = sess.run(error,{data: test_input, target: test_output})
-print('Epoch {:2d} error {:3.1f}%'.format(i + 1, 100 * incorrect))
+for step in range(4000) :
+    sess.run(train_lon)
+    sess.run(train_lat)
+
+    if step%200 == 0 :
+        print(step, "Lon : ", sess.run(cost_lon), "Lat : ", sess.run(cost_lat))
+
+#plt.plot(y_lon, y_lat, 'o', label='Input Data')
+#plt.legend()
+#plt.show()
+
 sess.close()

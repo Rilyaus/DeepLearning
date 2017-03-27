@@ -36,7 +36,7 @@ with tf.Session() as session:
     session.run(model)
     for step in range(0, 21) :
         session.run(train)
-        if ( step % 5 ) == 0:
+        if ( step % 10 ) == 0:
             plt.plot(x_point, y_point, 'o', label='step = {}'.format(step))
             plt.plot(x_point, session.run(A) * x_point + session.run(B))
             plt.legend()

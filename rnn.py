@@ -1,5 +1,12 @@
 import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
+
+data_f = open("./tensorflow_DATA/relative/relTest_case_01.dat")
+read_data = np.loadtxt(data_f)
+data_f.close()
+
+print(read_data)
 
 char_rdic = ['h', 'e', 'l', 'o']
 char_dic = {w : i for i, w in enumerate(char_rdic)}
