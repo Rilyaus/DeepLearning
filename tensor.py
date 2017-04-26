@@ -18,7 +18,6 @@ def ground_truth_func(i, j, t):
 def get_batch(batch_size):
     seq = np.zeros([batch_size, NUM_T_STEPS, 1], dtype=np.float32)
     tgt = np.zeros([batch_size, NUM_T_STEPS], dtype=np.float32)
-
     for b in xrange(batch_size):
         i = float(random.randint(-5, 5))
         j = float(random.randint(-10, 10))
@@ -28,9 +27,12 @@ def get_batch(batch_size):
 
         for t in xrange(NUM_T_STEPS):
             tgt[b, t] = ground_truth_func(i, j, t + NUM_T_STEPS)
+
+    print(seq)
     return seq, tgt
 
-
+get_batch(10)
+"""
 # Placeholder for the inputs in a given iteration
 sequence = tf.placeholder(tf.float32, [BATCH_SIZE, NUM_T_STEPS, 1])
 target = tf.placeholder(tf.float32, [BATCH_SIZE, NUM_T_STEPS])
@@ -102,3 +104,4 @@ with tf.Session() as sess:
     for b in xrange(BATCH_SIZE):
         print("{} -> {})".format(str(seq_batch[b, :, 0]), target_batch[b, :]))
         print(" `-> Prediction: {}".format(prediction[0][b]))
+"""

@@ -28,7 +28,6 @@ print(x)
 
 print(y)
 
-
 batchX_placeholder = tf.placeholder(tf.float32, [batch_size, truncated_backprop_length]) # 5, 15
 batchY_placeholder = tf.placeholder(tf.int32, [batch_size, truncated_backprop_length]) # 5, 15
 
